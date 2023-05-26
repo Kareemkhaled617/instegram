@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "801734762907",
+    "project_id": "instegram-bb63c",
+    "storage_bucket": "instegram-bb63c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801734762907:android:a453fe7e4cda6c9ce3813e",
+        "android_client_info": {
+          "package_name": "com.instegram.instegram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801734762907-eu0aighgfe32ggvnmukrnloib53fu52r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoz8d6jq3mV8KPatzzVKqC8YwbvGuNwZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801734762907-eu0aighgfe32ggvnmukrnloib53fu52r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
