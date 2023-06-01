@@ -11,14 +11,20 @@ import 'package:provider/provider.dart';
 
 import '../../providers/map_provider.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+class ServicesLocation extends StatefulWidget {
+  const ServicesLocation(
+      {Key? key, required this.late, required this.long, required this.image})
+      : super(key: key);
+  final double late;
+  final double long;
+  final String image;
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<ServicesLocation> createState() => _ServicesLocationState();
 }
 
-class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
+class _ServicesLocationState extends State<ServicesLocation>
+    with TickerProviderStateMixin {
   MapController mapController = MapController();
 
   Timer? timer;
@@ -39,6 +45,8 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    timer?.cancel();
+    mapController.dispose();
     super.dispose();
   }
 
@@ -77,13 +85,18 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     var x = Provider.of<ProviderController>(context);
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          title: const Text("Services "),
+          elevation: 0,
+        ),
         body: Stack(
           children: [
             FutureBuilder(
-                future: x.getDataLocation(),
+                future: x.getCurrentLocation(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    List data = snapshot.data as List;
                     return FlutterMap(
                       key: ValueKey(MediaQuery.of(context).orientation),
                       options: MapOptions(
@@ -100,10 +113,6 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                           const LocationMarkerPlugin(),
                         ],
                         center: LatLng(x.lat!, x.long!),
-                        // center: LatLng(30.635478259074432, 31.0902948107),
-                        // interactiveFlags: InteractiveFlag.drag |
-                        //     InteractiveFlag.pinchMove |
-                        //     InteractiveFlag.pinchZoom
                       ),
                       layers: [
                         TileLayerOptions(
@@ -112,11 +121,10 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                           subdomains: ['a', 'b', 'c'],
                         ),
                         MarkerLayerOptions(markers: [
-                          ...data.map((e) => Marker(
+                          Marker(
                               width: 50,
                               height: 50,
-                              point: LatLng(double.parse('${e['late']}'),
-                                  double.parse('${e['long']}')),
+                              point: LatLng(widget.late, widget.long),
                               builder: (BuildContext context) => InkWell(
                                     onTap: () {},
                                     child: ClipPath(
@@ -126,13 +134,13 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                                         height: 260,
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
-                                            image: NetworkImage(e['postUrl']),
+                                            image: NetworkImage(widget.image),
                                             fit: BoxFit.fill,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ))),
+                                  )),
                           Marker(
                             width: 100,
                             height: 100,
@@ -164,7 +172,9 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                       ],
                     );
                   } else {
-                    return const CircularProgressIndicator();
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
                 }),
             Positioned(

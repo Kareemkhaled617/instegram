@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/resources/auth_methods.dart';
 import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/screens/login_screen.dart';
+import 'package:instagram_clone_flutter/screens/review_post.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/follow_button.dart';
+
+import 'edit_profile_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -21,6 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var userData = {};
   int postLen = 0;
   int followers = 0;
+  List followersData = [];
+  List followingData = [];
   int following = 0;
   bool isFollowing = false;
   bool isLoading = false;
@@ -46,11 +51,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .collection('posts')
           .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get();
-
       postLen = postSnap.docs.length;
       userData = userSnap.data()!;
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
+
       isFollowing = userSnap
           .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
@@ -79,6 +84,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 userData['username'],
               ),
               centerTitle: false,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfilePage(
+                                    currentUser:
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                  )));
+                    },
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ))
+              ],
             ),
             body: ListView(
               children: [
@@ -228,10 +249,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
                             (snapshot.data! as dynamic).docs[index];
-
-                        return Image(
-                          image: NetworkImage(snap['postUrl']),
-                          fit: BoxFit.cover,
+                        return InkWell(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ReviewPost(
+                                data: (snapshot.data! as dynamic).docs[index],
+                              ),
+                            ),
+                          ),
+                          child: Image(
+                            image: NetworkImage(snap['postUrl']),
+                            fit: BoxFit.cover,
+                          ),
                         );
                       },
                     );

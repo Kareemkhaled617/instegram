@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/models/user.dart' as model;
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
@@ -11,8 +12,13 @@ import 'package:instagram_clone_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/feed_page/services.dart';
+import '../screens/map/post_location.dart';
+import '../screens/profile/profile_screen.dart';
+
 class PostCard extends StatefulWidget {
   final snap;
+
   const PostCard({
     Key? key,
     required this.snap,
@@ -86,10 +92,19 @@ class _PostCardState extends State<PostCard> {
             ).copyWith(right: 0),
             child: Row(
               children: <Widget>[
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(
-                    widget.snap['profImage'].toString(),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        uid: widget.snap['uid'],
+                      ),
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundImage: NetworkImage(
+                      widget.snap['profImage'].toString(),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -203,6 +218,7 @@ class _PostCardState extends State<PostCard> {
           ),
           // LIKE, COMMENT SECTION OF THE POST
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               LikeAnimation(
                 isAnimating: widget.snap['likes'].contains(user.uid),
@@ -236,16 +252,53 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               IconButton(
-                  icon: const Icon(
-                    Icons.send,
-                  ),
-                  onPressed: () {}),
-              Expanded(
-                  child: Align(
-                alignment: Alignment.bottomRight,
-                child: IconButton(
-                    icon: const Icon(Icons.bookmark_border), onPressed: () {}),
-              ))
+                icon: const Icon(
+                  Icons.location_on,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ServicesLocation(
+                            late: widget.snap['late'],
+                            long: widget.snap['long'],
+                            image: widget.snap['postUrl'],
+                          )));
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.work,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ServiceScreen(
+                            postId: widget.snap['postId'],
+                          )));
+                },
+              ),
+              IconButton(
+                icon: widget.snap['save'].contains(user.uid)
+                    ? const Icon(Icons.bookmark)
+                    : const Icon(Icons.bookmark_border),
+                onPressed: () async {
+                  String docID = FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('saved')
+                      .doc()
+                      .id;
+                  FireStoreMethods().savePost(
+                    widget.snap['postId'].toString(),
+                    user.uid,
+                    widget.snap['save'],
+                  );
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('saved')
+                      .doc(docID)
+                      .set({'id': docID, 'postId': widget.snap['postId']});
+                },
+              )
             ],
           ),
           //DESCRIPTION AND NUMBER OF COMMENTS

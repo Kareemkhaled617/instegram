@@ -26,8 +26,49 @@ class FireStoreMethods {
         profImage: profImage,
         long: long,
         late: late,
+        save: [],
       );
       _firestore.collection('posts').doc(postId).set(post.toJson());
+      res = "success";
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  Future<String> uploadServices(
+      String description,
+      Uint8List file,
+      String uid,
+      String username,
+      String profImage,
+      double late,
+      double long,
+      String postID) async {
+    String res = "Some error occurred";
+    try {
+      String photoUrl =
+          await StorageMethods().uploadImageToStorage('services', file, true);
+      String servicesId = const Uuid().v1(); // creates unique id based on time
+      Post post = Post(
+        description: description,
+        uid: uid,
+        username: username,
+        likes: [],
+        postId: servicesId,
+        datePublished: DateTime.now(),
+        postUrl: photoUrl,
+        profImage: profImage,
+        long: long,
+        late: late,
+        save: [],
+      );
+      _firestore
+          .collection('posts')
+          .doc(postID)
+          .collection('services')
+          .doc(servicesId)
+          .set(post.toJson());
       res = "success";
     } catch (err) {
       res = err.toString();
@@ -47,6 +88,25 @@ class FireStoreMethods {
         // else we need to add uid to the likes array
         _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid])
+        });
+      }
+      res = 'success';
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  Future<String> savePost(String postId, String uid, List save) async {
+    String res = "Some error occurred";
+    try {
+      if (save.contains(uid)) {
+        _firestore.collection('posts').doc(postId).update({
+          'save': FieldValue.arrayRemove([uid])
+        });
+      } else {
+        _firestore.collection('posts').doc(postId).update({
+          'save': FieldValue.arrayUnion([uid])
         });
       }
       res = 'success';

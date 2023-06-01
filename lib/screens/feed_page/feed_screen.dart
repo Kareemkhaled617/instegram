@@ -4,6 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/widgets/post_card.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/map_provider.dart';
+import '../map/map.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
@@ -16,7 +20,7 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-
+    var con = Provider.of<ProviderController>(context);
     return Scaffold(
       backgroundColor:
           width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
@@ -33,10 +37,17 @@ class _FeedScreenState extends State<FeedScreen> {
               actions: [
                 IconButton(
                   icon: const Icon(
-                    Icons.messenger_outline,
+                    Icons.location_history,
                     color: primaryColor,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    con.getCurrentLocation().then((value) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MapPage()));
+                    });
+                  },
                 ),
               ],
             ),
@@ -44,7 +55,7 @@ class _FeedScreenState extends State<FeedScreen> {
         stream: FirebaseFirestore.instance.collection('posts').snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
             );
