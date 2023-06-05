@@ -97,25 +97,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 isPass: true,
               ),
               const SizedBox(
-                height: 24,
+                height: 64,
               ),
               InkWell(
                 child: Container(
                   child: !_isLoading
                       ? const Text(
-                          'Log in',
+                          'Log in',style: TextStyle(fontWeight: FontWeight.w900,fontSize: 20),
                         )
                       : const CircularProgressIndicator(
                           color: primaryColor,
                         ),
-                  width: double.infinity,
+                  width: MediaQuery.of(context).size.width/2,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
+                  decoration:  const ShapeDecoration(
+                      gradient: LinearGradient(colors: [
+                        Color(0xffE4B16C),
+                        Color(0xffDE5D76),
+                      ]),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    color: blueColor,
                   ),
                 ),
                 onTap: loginUser,
@@ -131,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
+
                     child: const Text(
                       'Dont have an account?',
                     ),
@@ -143,10 +147,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: Container(
+                      decoration:  const ShapeDecoration(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                          ),
+
+                          gradient: LinearGradient(colors: [
+                          Color(0xffE4B16C),
+                          Color(0xffDE5D76),
+                        ])
+                      ),
                       child: const Text(
-                        ' Signup.',
+                        ' SignUp ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 16
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 8),

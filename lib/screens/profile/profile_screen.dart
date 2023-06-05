@@ -97,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     icon: const Icon(
                       Icons.settings,
-                      color: Colors.white,
+                      color: Color(0xfffab585),
                     ))
               ],
             ),
@@ -106,16 +106,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(
+                          userData['photoUrl'],
+                        ),
+                        radius: 40,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
+                          top: 15,
+                        ),
+                        child: Text(
+                          userData['username'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(
+                          bottom: 15,
+                          top: 5,
+
+                        ),
+                        child: Text(
+                          userData['bio'],
+                        ),
+                      ),
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            backgroundImage: NetworkImage(
-                              userData['photoUrl'],
-                            ),
-                            radius: 40,
-                          ),
                           Expanded(
                             flex: 1,
                             child: Column(
@@ -124,10 +150,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
+
                                   children: [
-                                    buildStatColumn(postLen, "posts"),
-                                    buildStatColumn(followers, "followers"),
-                                    buildStatColumn(following, "following"),
+                                    buildStatColumn(postLen, "Posts"),
+                                    buildStatColumn(followers, "Followers"),
+                                    buildStatColumn(following, "Following"),
                                   ],
                                 ),
                                 Row(
@@ -199,27 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(
-                          top: 15,
-                        ),
-                        child: Text(
-                          userData['username'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(
-                          top: 1,
-                        ),
-                        child: Text(
-                          userData['bio'],
-                        ),
-                      ),
+
                     ],
                   ),
                 ),
@@ -276,22 +283,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          num.toString(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         Container(
           margin: const EdgeInsets.only(top: 4),
           child: Text(
             label,
             style: const TextStyle(
               fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+          ),
+        ),
+
+        Text(
+          num.toString(),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
