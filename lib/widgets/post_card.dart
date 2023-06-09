@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/models/user.dart' as model;
-import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/screens/comments_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
@@ -9,7 +8,6 @@ import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../screens/feed_page/services.dart';
 import '../screens/map/post_location.dart';
@@ -67,7 +65,7 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    final model.User user = Provider.of<UserProvider>(context).getUser;
+    // final model.User user = Provider.of<UserProvider>(context).getUser;
     final width = MediaQuery.of(context).size.width;
 
     return Container(
@@ -124,7 +122,8 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                widget.snap['uid'].toString() == user.uid
+                widget.snap['uid'].toString() ==
+                        FirebaseAuth.instance.currentUser!.uid
                     ? IconButton(
                         onPressed: () {
                           showDialog(
@@ -173,7 +172,8 @@ class _PostCardState extends State<PostCard> {
             onDoubleTap: () {
               FireStoreMethods().likePost(
                 widget.snap['postId'].toString(),
-                user.uid,
+                FirebaseAuth.instance.currentUser!.uid,
+                widget.snap['uid'],
                 widget.snap['likes'],
               );
               setState(() {
@@ -240,11 +240,12 @@ class _PostCardState extends State<PostCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           LikeAnimation(
-                            isAnimating:
-                                widget.snap['likes'].contains(user.uid),
+                            isAnimating: widget.snap['likes'].contains(
+                                FirebaseAuth.instance.currentUser!.uid),
                             smallLike: true,
                             child: IconButton(
-                              icon: widget.snap['likes'].contains(user.uid)
+                              icon: widget.snap['likes'].contains(
+                                      FirebaseAuth.instance.currentUser!.uid)
                                   ? const Icon(
                                       Icons.favorite,
                                       color: Colors.red,
@@ -254,7 +255,8 @@ class _PostCardState extends State<PostCard> {
                                     ),
                               onPressed: () => FireStoreMethods().likePost(
                                 widget.snap['postId'].toString(),
-                                user.uid,
+                                FirebaseAuth.instance.currentUser!.uid,
+                                widget.snap['uid'],
                                 widget.snap['likes'],
                               ),
                             ),
@@ -296,13 +298,14 @@ class _PostCardState extends State<PostCard> {
                             },
                           ),
                           IconButton(
-                            icon: widget.snap['save'].contains(user.uid)
+                            icon: widget.snap['save'].contains(
+                                    FirebaseAuth.instance.currentUser!.uid)
                                 ? const Icon(Icons.bookmark)
                                 : const Icon(Icons.bookmark_border),
                             onPressed: () async {
                               FireStoreMethods().savePost(
                                 widget.snap['postId'].toString(),
-                                user.uid,
+                                FirebaseAuth.instance.currentUser!.uid,
                                 widget.snap['save'],
                               );
                             },

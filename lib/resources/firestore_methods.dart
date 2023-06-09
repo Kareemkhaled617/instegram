@@ -77,7 +77,9 @@ class FireStoreMethods {
     return res;
   }
 
-  Future<String> likePost(String postId, String uid, List likes) async {
+  Future<String> likePost(
+      String postId, String uid, String userId, List likes) async {
+    print(uid);
     String res = "Some error occurred";
     try {
       if (likes.contains(uid)) {
@@ -88,20 +90,24 @@ class FireStoreMethods {
       } else {
         String docID = _firestore
             .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(userId)
             .collection('notification')
             .doc()
             .id;
-        if (FirebaseAuth.instance.currentUser!.uid != uid) {
-          _firestore.collection('users').doc(uid).get().then((value) {
+        if (FirebaseAuth.instance.currentUser!.uid != userId) {
+          _firestore
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .get()
+              .then((value) {
             _firestore
                 .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .doc(userId)
                 .collection('notification')
                 .doc(docID)
                 .set({
               'message': 'add like on your post',
-              'uid': uid,
+              'uid': FirebaseAuth.instance.currentUser!.uid,
               'docId': docID,
               'name': value['username'],
               'image': value['photoUrl'],
