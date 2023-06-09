@@ -87,13 +87,13 @@ class FireStoreMethods {
         _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayRemove([uid])
         });
-      } else {
-        String docID = _firestore
+        _firestore
             .collection('users')
             .doc(userId)
             .collection('notification')
-            .doc()
-            .id;
+            .doc(postId)
+            .delete();
+      } else {
         if (FirebaseAuth.instance.currentUser!.uid != userId) {
           _firestore
               .collection('users')
@@ -104,11 +104,11 @@ class FireStoreMethods {
                 .collection('users')
                 .doc(userId)
                 .collection('notification')
-                .doc(docID)
+                .doc(postId)
                 .set({
               'message': 'add like on your post',
               'uid': FirebaseAuth.instance.currentUser!.uid,
-              'docId': docID,
+              'docId': postId,
               'name': value['username'],
               'image': value['photoUrl'],
             });

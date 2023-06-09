@@ -84,13 +84,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               appBar: AppBar(
                 backgroundColor: mobileBackgroundColor,
                 elevation: 0,
+                leading: FirebaseAuth.instance.currentUser!.uid != widget.uid
+                    ? IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back, color: Color(0xfffab585),),
+                )
+                    : Container(),
                 title: Text(
                   userData['username'],
                   style: const TextStyle(
                     color: Colors.black,
+                    fontWeight: FontWeight.w900
                   ),
                 ),
-                centerTitle: false,
+                centerTitle: true,
                 actions: [
                   FirebaseAuth.instance.currentUser!.uid == widget.uid
                       ? IconButton(
@@ -151,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           child: Text(
                             userData['bio'],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                             ),
                           ),
@@ -262,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                       : const TabBar(
                           tabs: [
-                            Tab(icon: Icon(Icons.grid_view_rounded)),
+                            Tab(icon: Icon(Icons.grid_view_rounded, color: Color(0xfffab585),)),
                           ],
                         ),
                   Expanded(
