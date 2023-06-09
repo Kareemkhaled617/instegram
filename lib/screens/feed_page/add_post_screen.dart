@@ -189,6 +189,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
+                        style: const TextStyle(color: Colors.black),
                         controller: _descriptionController,
                         decoration: const InputDecoration(
                             hintText: "Write a caption...",

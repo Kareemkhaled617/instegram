@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'upload_services.dart';
 
@@ -108,20 +109,32 @@ class ServiceScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              InkWell(
-                                child: Row(
-                                  children: const [
-                                    Icon(Icons.done_all),
-                                    SizedBox(
-                                      width: 5,
+                              StreamBuilder(
+                                  stream: FirebaseFirestore.instance.collection('users').doc(data[index]['uid']).snapshots(),
+                                  builder: (context,AsyncSnapshot snapshot){
+                                if(snapshot.hasData){
+                                  var data=snapshot.data ;
+                                  return InkWell(
+                                    onTap: () {
+                                      launchUrl(Uri.parse('tel:/${data['phone']}'));
+                                    },
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.done_all),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text("Order Now",
+                                            style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: 15.0)),
+                                      ],
                                     ),
-                                    Text("Order Now",
-                                        style: TextStyle(
-                                            color: Colors.blueAccent,
-                                            fontSize: 15.0)),
-                                  ],
-                                ),
-                              ),
+                                  );
+                                }else{
+                                  return Container();
+                                }
+                              })
                             ],
                           ),
                         )

@@ -7,6 +7,7 @@ import 'package:instagram_clone_flutter/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/map_provider.dart';
+import '../DTPaymentScreen.dart';
 import '../map/map.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -63,7 +64,13 @@ class _FeedScreenState extends State<FeedScreen> {
                           return Row(
                             children: [
                               TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DTPaymentScreen()));
+                                  },
                                   child: const Text('subscribe now'))
                             ],
                           );

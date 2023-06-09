@@ -9,6 +9,7 @@ import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
 
+import '../screens/DTPaymentScreen.dart';
 import '../screens/feed_page/services.dart';
 import '../screens/map/post_location.dart';
 import '../screens/profile/profile_screen.dart';
@@ -322,7 +323,14 @@ class _PostCardState extends State<PostCard> {
                           style: TextStyle(color: Colors.black),
                         ),
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DTPaymentScreen()));
+
+                            },
                             child: const Text('subscribe now'))
                       ],
                     );
