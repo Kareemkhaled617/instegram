@@ -118,10 +118,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
     final ProviderController mapProvider =
         Provider.of<ProviderController>(context);
     return _file == null
-        ? Center(
+        ? CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.blueGrey,
             child: IconButton(
               icon: const Icon(
                 Icons.upload,
+                color: Colors.white,
+                size: 40,
               ),
               onPressed: () => _selectImage(context),
             ),
@@ -130,11 +134,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
                 onPressed: clearImage,
               ),
               title: const Text(
                 'Post to',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               ),
               centerTitle: false,
               actions: <Widget>[
@@ -182,6 +192,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         controller: _descriptionController,
                         decoration: const InputDecoration(
                             hintText: "Write a caption...",
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
                             border: InputBorder.none),
                         maxLines: 8,
                       ),

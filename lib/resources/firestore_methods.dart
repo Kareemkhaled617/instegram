@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_clone_flutter/models/post.dart';
 import 'package:instagram_clone_flutter/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
@@ -85,7 +86,28 @@ class FireStoreMethods {
           'likes': FieldValue.arrayRemove([uid])
         });
       } else {
-        // else we need to add uid to the likes array
+        String docID = _firestore
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('notification')
+            .doc()
+            .id;
+        if (FirebaseAuth.instance.currentUser!.uid != uid) {
+          _firestore.collection('users').doc(uid).get().then((value) {
+            _firestore
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection('notification')
+                .doc(docID)
+                .set({
+              'message': 'add like on your post',
+              'uid': uid,
+              'docId': docID,
+              'name': value['username'],
+              'image': value['photoUrl'],
+            });
+          });
+        }
         _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid])
         });
@@ -104,10 +126,22 @@ class FireStoreMethods {
         _firestore.collection('posts').doc(postId).update({
           'save': FieldValue.arrayRemove([uid])
         });
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('saved')
+            .doc(postId)
+            .delete();
       } else {
         _firestore.collection('posts').doc(postId).update({
           'save': FieldValue.arrayUnion([uid])
         });
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('saved')
+            .doc(postId)
+            .set({'postId': postId});
       }
       res = 'success';
     } catch (err) {

@@ -27,28 +27,51 @@ class _FeedScreenState extends State<FeedScreen> {
       appBar: width > webScreenSize
           ? null
           : AppBar(
-              backgroundColor: mobileBackgroundColor,
+              backgroundColor: const Color(0xfffab585),
               centerTitle: false,
+              elevation: 0,
               title: SvgPicture.asset(
                 'assets/ic_instagram.svg',
                 color: primaryColor,
                 height: 32,
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.location_history,
-                    color: primaryColor,
-                  ),
-                  onPressed: () {
-                    con.getCurrentLocation().then((value) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MapPage()));
-                    });
-                  },
-                ),
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('subscriptions')
+                        .doc('subscriptions')
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        var data = snapshot.data;
+                        if (data['map_options']) {
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.location_history,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              con.getCurrentLocation().then((value) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const MapPage()));
+                              });
+                            },
+                          );
+                        } else {
+                          return Row(
+                            children: [
+                              TextButton(
+                                  onPressed: () {},
+                                  child: const Text('subscribe now'))
+                            ],
+                          );
+                        }
+                      } else {
+                        return Container();
+                      }
+                    }),
               ],
             ),
       body: StreamBuilder(

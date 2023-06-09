@@ -104,8 +104,8 @@ class _UploadServicesState extends State<UploadServices> {
         context,
         MaterialPageRoute(
             builder: (context) => UploadServices(
-              postId: widget.postId,
-            )));
+                  postId: widget.postId,
+                )));
   }
 
   void clearImage() {
@@ -131,6 +131,7 @@ class _UploadServicesState extends State<UploadServices> {
               child: IconButton(
                 icon: const Icon(
                   Icons.upload,
+                  color: Colors.black,
                 ),
                 onPressed: () => _selectImage(context),
               ),
@@ -138,13 +139,20 @@ class _UploadServicesState extends State<UploadServices> {
           )
         : Scaffold(
             appBar: AppBar(
+              elevation: 0,
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xfffab585),
+                ),
                 onPressed: clearImage,
               ),
               title: const Text(
                 'Post to',
+                style: TextStyle(
+                  color: Color(0xfffab585),
+                ),
               ),
               centerTitle: false,
               actions: <Widget>[
@@ -189,9 +197,11 @@ class _UploadServicesState extends State<UploadServices> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
+                        style: const TextStyle(color: Colors.black),
                         controller: _descriptionController,
                         decoration: const InputDecoration(
                             hintText: "Write a caption...",
+                            hintStyle: TextStyle(color: Colors.black),
                             border: InputBorder.none),
                         maxLines: 8,
                       ),

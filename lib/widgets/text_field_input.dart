@@ -5,6 +5,7 @@ class TextFieldInput extends StatelessWidget {
   final bool isPass;
   final String hintText;
   final TextInputType textInputType;
+
   const TextFieldInput({
     Key? key,
     required this.textEditingController,
@@ -16,13 +17,17 @@ class TextFieldInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inputBorder = OutlineInputBorder(
-      borderSide: Divider.createBorderSide(context),
+      borderSide: Divider.createBorderSide(context,
+          color: const Color(0xfffab585), width: 1.5),
+      borderRadius: BorderRadius.circular(12),
     );
 
     return TextField(
+      style: const TextStyle(color: Colors.black),
       controller: textEditingController,
       decoration: InputDecoration(
         hintText: hintText,
+        hintStyle: const TextStyle(color: Colors.black),
         border: inputBorder,
         focusedBorder: inputBorder,
         enabledBorder: inputBorder,

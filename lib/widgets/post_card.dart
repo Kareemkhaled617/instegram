@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/models/user.dart' as model;
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
@@ -119,8 +118,7 @@ class _PostCardState extends State<PostCard> {
                         Text(
                           widget.snap['username'].toString(),
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                       ],
                     ),
@@ -217,90 +215,119 @@ class _PostCardState extends State<PostCard> {
             ),
           ),
           // LIKE, COMMENT SECTION OF THE POST
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              LikeAnimation(
-                isAnimating: widget.snap['likes'].contains(user.uid),
-                smallLike: true,
-                child: IconButton(
-                  icon: widget.snap['likes'].contains(user.uid)
-                      ? const Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                        )
-                      : const Icon(
-                          Icons.favorite_border,
+          StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('subscriptions')
+                  .doc('subscriptions')
+                  .snapshots(),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  var data = snapshot.data;
+                  if (data['post_options']) {
+                    return Container(
+                      margin: const EdgeInsets.only(
+                          top: 4, left: 16, right: 16, bottom: 6),
+                      decoration: const ShapeDecoration(
+                        gradient: LinearGradient(colors: [
+                          Color(0xffE4B16C),
+                          Color(0xffDE5D76),
+                        ]),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
-                  onPressed: () => FireStoreMethods().likePost(
-                    widget.snap['postId'].toString(),
-                    user.uid,
-                    widget.snap['likes'],
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.comment_outlined,
-                ),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => CommentsScreen(
-                      postId: widget.snap['postId'].toString(),
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.location_on,
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ServicesLocation(
-                            late: widget.snap['late'],
-                            long: widget.snap['long'],
-                            image: widget.snap['postUrl'],
-                          )));
-                },
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.work,
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ServiceScreen(
-                            postId: widget.snap['postId'],
-                          )));
-                },
-              ),
-              IconButton(
-                icon: widget.snap['save'].contains(user.uid)
-                    ? const Icon(Icons.bookmark)
-                    : const Icon(Icons.bookmark_border),
-                onPressed: () async {
-                  String docID = FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('saved')
-                      .doc()
-                      .id;
-                  FireStoreMethods().savePost(
-                    widget.snap['postId'].toString(),
-                    user.uid,
-                    widget.snap['save'],
-                  );
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('saved')
-                      .doc(docID)
-                      .set({'id': docID, 'postId': widget.snap['postId']});
-                },
-              )
-            ],
-          ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          LikeAnimation(
+                            isAnimating:
+                                widget.snap['likes'].contains(user.uid),
+                            smallLike: true,
+                            child: IconButton(
+                              icon: widget.snap['likes'].contains(user.uid)
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    )
+                                  : const Icon(
+                                      Icons.favorite_border,
+                                    ),
+                              onPressed: () => FireStoreMethods().likePost(
+                                widget.snap['postId'].toString(),
+                                user.uid,
+                                widget.snap['likes'],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.comment_outlined,
+                            ),
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CommentsScreen(
+                                  postId: widget.snap['postId'].toString(),
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.location_on,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ServicesLocation(
+                                        late: widget.snap['late'],
+                                        long: widget.snap['long'],
+                                        image: widget.snap['postUrl'],
+                                      )));
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.shopping_basket_outlined,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ServiceScreen(
+                                        postId: widget.snap['postId'],
+                                      )));
+                            },
+                          ),
+                          IconButton(
+                            icon: widget.snap['save'].contains(user.uid)
+                                ? const Icon(Icons.bookmark)
+                                : const Icon(Icons.bookmark_border),
+                            onPressed: () async {
+                              FireStoreMethods().savePost(
+                                widget.snap['postId'].toString(),
+                                user.uid,
+                                widget.snap['save'],
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'subscribe to see more . .  ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextButton(
+                            onPressed: () {},
+                            child: const Text('subscribe now'))
+                      ],
+                    );
+                  }
+                } else {
+                  return Container();
+                }
+              }),
           //DESCRIPTION AND NUMBER OF COMMENTS
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -315,7 +342,10 @@ class _PostCardState extends State<PostCard> {
                         .copyWith(fontWeight: FontWeight.w800),
                     child: Text(
                       '${widget.snap['likes'].length} likes',
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.black),
                     )),
                 Container(
                   width: double.infinity,
@@ -329,11 +359,11 @@ class _PostCardState extends State<PostCard> {
                         TextSpan(
                           text: widget.snap['username'].toString(),
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         TextSpan(
                           text: ' ${widget.snap['description']}',
+                          style: const TextStyle(color: Colors.black),
                         ),
                       ],
                     ),

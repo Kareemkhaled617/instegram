@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class CommentsScreen extends StatefulWidget {
   final postId;
+
   const CommentsScreen({Key? key, required this.postId}) : super(key: key);
 
   @override
@@ -50,9 +51,20 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
         backgroundColor: mobileBackgroundColor,
         title: const Text(
           'Comments',
+          style: TextStyle(color: Colors.black),
         ),
         centerTitle: false,
       ),
@@ -95,9 +107,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: TextField(
+                    style: const TextStyle(color: Colors.black),
                     controller: commentEditingController,
                     decoration: InputDecoration(
                       hintText: 'Comment as ${user.username}',
+                      hintStyle: const TextStyle(
+                        color: Colors.black,
+                      ),
                       border: InputBorder.none,
                     ),
                   ),
@@ -112,9 +128,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  child: const Text(
+                  child: Text(
                     'Post',
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: Colors.blue.shade600),
                   ),
                 ),
               )

@@ -14,8 +14,18 @@ class ServiceScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: const Text("Services "),
+        title: const Text(
+          "Services ",
+          style: TextStyle(color: Colors.black),
+        ),
         elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color(0xfffab585),
+          ),
+        ),
         actions: [
           IconButton(
               onPressed: () async {
@@ -26,7 +36,10 @@ class ServiceScreen extends StatelessWidget {
                               postId: postId,
                             )));
               },
-              icon: const Icon(Icons.add))
+              icon: const Icon(
+                Icons.add,
+                color: Color(0xfffab585),
+              ))
         ],
       ),
       body: StreamBuilder(
@@ -83,7 +96,15 @@ class ServiceScreen extends StatelessWidget {
                                       backgroundImage: NetworkImage(
                                         data[index]['profImage'],
                                       ),
-                                    )
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(data[index]['username'],
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 15.0)),
                                   ],
                                 ),
                               ),

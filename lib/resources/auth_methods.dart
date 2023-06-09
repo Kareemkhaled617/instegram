@@ -25,6 +25,7 @@ class AuthMethods {
     required String email,
     required String password,
     required String username,
+    required String phone,
     required String bio,
     required Uint8List file,
   }) async {
@@ -34,6 +35,7 @@ class AuthMethods {
           password.isNotEmpty ||
           username.isNotEmpty ||
           bio.isNotEmpty ||
+          phone.isNotEmpty ||
           file != null) {
         // registering user in auth with email and password
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
@@ -45,14 +47,14 @@ class AuthMethods {
             .uploadImageToStorage('profilePics', file, false);
 
         model.User _user = model.User(
-          username: username,
-          uid: cred.user!.uid,
-          photoUrl: photoUrl,
-          email: email,
-          bio: bio,
-          followers: [],
-          following: [],
-        );
+            username: username,
+            uid: cred.user!.uid,
+            photoUrl: photoUrl,
+            email: email,
+            bio: bio,
+            followers: [],
+            following: [],
+            phone: phone);
 
         // adding user in our database
         await _firestore

@@ -17,8 +17,8 @@ class ProfileFormWidget extends StatelessWidget {
         sizeVer(10),
         TextFormField(
           controller: controller,
-          style: TextStyle(color: primaryColor),
-          decoration: InputDecoration(
+          style: const TextStyle(color: primaryColor),
+          decoration: const InputDecoration(
               border: InputBorder.none,
               labelStyle: TextStyle(color: primaryColor)
           ),

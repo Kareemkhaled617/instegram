@@ -7,7 +7,7 @@ import 'package:instagram_clone_flutter/resources/auth_methods.dart';
 import 'package:instagram_clone_flutter/responsive/mobile_screen_layout.dart';
 import 'package:instagram_clone_flutter/responsive/responsive_layout.dart';
 import 'package:instagram_clone_flutter/responsive/web_screen_layout.dart';
-import 'package:instagram_clone_flutter/screens/login_screen.dart';
+import 'package:instagram_clone_flutter/screens/auth/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
@@ -21,6 +21,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
@@ -36,38 +37,39 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signUpUser() async {
-    // set loading to true
-    setState(() {
-      _isLoading = true;
-    });
-
-    // signup user using our authmethodds
-    String res = await AuthMethods().signUpUser(
-        email: _emailController.text,
-        password: _passwordController.text,
-        username: _usernameController.text,
-        bio: _bioController.text,
-        file: _image!);
-    // if string returned is sucess, user has been created
-    if (res == "success") {
+    if (_image != null) {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
-      // navigate to the home screen
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-            mobileScreenLayout: MobileScreenLayout(),
-            webScreenLayout: WebScreenLayout(),
+      String res = await AuthMethods().signUpUser(
+          email: _emailController.text,
+          password: _passwordController.text,
+          username: _usernameController.text,
+          bio: _bioController.text,
+          file: _image!,
+          phone: _phoneController.text);
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        // navigate to the home screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout(),
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        // show the error
+        showSnackBar(context, 'Invalid Data');
+      }
     } else {
-      setState(() {
-        _isLoading = false;
-      });
-      // show the error
-      showSnackBar(context, res);
+      showSnackBar(context, 'Select Your profile pic .. !');
     }
   }
 
@@ -81,20 +83,16 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            width: double.infinity,
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+          width: double.infinity,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  child: Container(),
-                  flex: 2,
-                ),
                 SvgPicture.asset(
                   'assets/ic_instagram.svg',
                   color: primaryColor,
@@ -122,8 +120,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       left: 80,
                       child: IconButton(
                         onPressed: selectImage,
-                        icon: const Icon(Icons.add_a_photo,color:                       Color(0xffDE5D76)
-                            ,),
+                        icon: const Icon(
+                          Icons.add_a_photo,
+                          color: Color(0xffDE5D76),
+                        ),
                       ),
                     )
                   ],
@@ -148,6 +148,14 @@ class _SignupScreenState extends State<SignupScreen> {
                   height: 24,
                 ),
                 TextFieldInput(
+                  hintText: 'Enter your phone',
+                  textInputType: TextInputType.number,
+                  textEditingController: _phoneController,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFieldInput(
                   hintText: 'Enter your password',
                   textInputType: TextInputType.text,
                   textEditingController: _passwordController,
@@ -162,26 +170,27 @@ class _SignupScreenState extends State<SignupScreen> {
                   textEditingController: _bioController,
                 ),
                 const SizedBox(
-                  height:64,
+                  height: 64,
                 ),
                 InkWell(
                   child: Container(
                     child: !_isLoading
                         ? const Text(
-                            'Sign up',style: TextStyle(fontWeight: FontWeight.w900,fontSize: 20),
+                            'Sign up',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900, fontSize: 20),
                           )
                         : const CircularProgressIndicator(
                             color: primaryColor,
                           ),
-                    width: MediaQuery.of(context).size.width/2,
+                    width: MediaQuery.of(context).size.width / 2,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration:  const ShapeDecoration(
+                    decoration: const ShapeDecoration(
                       gradient: LinearGradient(colors: [
                         Color(0xffE4B16C),
                         Color(0xffDE5D76),
                       ]),
-
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -192,18 +201,15 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(
                   height: 12,
                 ),
-                Flexible(
-                  child: Container(),
-                  flex: 2,
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      child: const Text(
-                        'Already have an account?',
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    const Text(
+                      'Already have an account?',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      width: 6,
                     ),
                     GestureDetector(
                       onTap: () => Navigator.of(context).push(
@@ -212,23 +218,19 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       child: Container(
-                        decoration:  const ShapeDecoration(
+                        decoration: const ShapeDecoration(
                           gradient: LinearGradient(colors: [
                             Color(0xffE4B16C),
                             Color(0xffDE5D76),
                           ]),
-
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                         ),
-
                         child: const Text(
                           ' Login ',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                       ),

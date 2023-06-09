@@ -18,7 +18,6 @@ class _ReviewPostState extends State<ReviewPost> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    var con = Provider.of<ProviderController>(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 50),

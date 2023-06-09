@@ -1,8 +1,8 @@
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:instagram_clone_flutter/screens/profile/profile_screen.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -12,27 +12,6 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  List<dynamic> notifications = [];
-
-  Future<void> readJson() async {
-    final String response =
-        await rootBundle.loadString('assets/notifications.json');
-    final data = await json.decode(response);
-
-    setState(() {
-      notifications = data['notifications']
-          .map((data) => InstagramNotification.fromJson(data))
-          .toList();
-    });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    readJson();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,38 +20,54 @@ class _NotificationPageState extends State<NotificationPage> {
           backgroundColor: Colors.transparent,
           title: const Text(
             "Activity",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           centerTitle: false,
         ),
-        body: ListView.builder(
-            itemCount: notifications.length,
-            itemBuilder: (context, index) {
-              return Slidable(
-                actionPane: const SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                child: notificationItem(notifications[index]),
-                secondaryActions: <Widget>[
-                  Container(
-                      height: 60,
-                      color: Colors.grey.shade500,
-                      child: const Icon(
-                        Icons.info_outline,
-                        color: Colors.white,
-                      )),
-                  Container(
-                      height: 60,
-                      color: Colors.red,
-                      child: const Icon(
-                        Icons.delete_outline_sharp,
-                        color: Colors.white,
-                      )),
-                ],
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('notification')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List data = snapshot.data!.docs;
+              return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return Slidable(
+                      actionPane: const SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      child: notificationItem(data[index]),
+                      secondaryActions: <Widget>[
+                        Container(
+                            height: 60,
+                            color: Colors.grey.shade500,
+                            child: const Icon(
+                              Icons.info_outline,
+                              color: Colors.black,
+                            )),
+                        Container(
+                            height: 60,
+                            color: Colors.red,
+                            child: const Icon(
+                              Icons.delete_outline_sharp,
+                              color: Colors.black,
+                            )),
+                      ],
+                    );
+                  });
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
               );
-            }));
+            }
+          },
+        ));
   }
 
-  notificationItem(InstagramNotification notification) {
+  notificationItem(notification) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
@@ -81,39 +76,36 @@ class _NotificationPageState extends State<NotificationPage> {
           Expanded(
             child: Row(
               children: [
-                notification.hasStory
-                    ? Container(
-                        width: 50,
-                        height: 50,
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [Colors.red, Colors.orangeAccent],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomLeft),
-                            // border: Border.all(color: Colors.red),
-                            shape: BoxShape.circle),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 3)),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.network(notification.profilePic)),
-                        ),
-                      )
-                    : Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.grey.shade300, width: 1)),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Image.network(notification.profilePic)),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        uid: notification['uid'],
                       ),
+                    ),
+                  ),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: [Colors.red, Colors.orangeAccent],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomLeft),
+                        // border: Border.all(color: Colors.red),
+                        shape: BoxShape.circle),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Colors.redAccent, width: 3)),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.network(notification['image'])),
+                    ),
+                  ),
+                ),
                 const SizedBox(
                   width: 10,
                 ),
@@ -121,38 +113,17 @@ class _NotificationPageState extends State<NotificationPage> {
                   child: RichText(
                       text: TextSpan(children: [
                     TextSpan(
-                        text: notification.name,
+                        text: notification['name'],
                         style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
+                            color: Colors.black, fontWeight: FontWeight.bold)),
                     TextSpan(
-                        text: notification.content,
-                        style: const TextStyle(color: Colors.white)),
-                    TextSpan(
-                      text: notification.timeAgo,
-                      style: TextStyle(color: Colors.grey.shade500),
-                    )
+                        text: '  ${notification['message']}',
+                        style: const TextStyle(color: Colors.black)),
                   ])),
                 )
               ],
             ),
           ),
-          notification.postImage != ''
-              ? SizedBox(
-                  width: 50,
-                  height: 50,
-                  child:
-                      ClipRRect(child: Image.network(notification.postImage)),
-                )
-              : Container(
-                  height: 35,
-                  width: 110,
-                  decoration: BoxDecoration(
-                    color: Colors.blue[700],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Center(
-                      child: Text('Follow',
-                          style: TextStyle(color: Colors.white)))),
         ],
       ),
     );

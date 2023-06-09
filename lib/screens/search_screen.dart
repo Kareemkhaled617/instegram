@@ -19,19 +19,27 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
-  searchController.dispose();
+    searchController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
+        elevation: 0,
         title: Form(
           child: TextFormField(
             controller: searchController,
-            decoration:
-                const InputDecoration(labelText: 'Search for a user...'),
+            style: const TextStyle(
+              color: Colors.black,
+            ),
+            decoration: const InputDecoration(
+                labelText: 'Search for a user...',
+                labelStyle: TextStyle(
+                  color: Colors.black,
+                )),
             onFieldSubmitted: (String _) {
               setState(() {
                 isShowUsers = true;
@@ -67,6 +75,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           title: Text(
                             data[index]['username'],
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       );
@@ -96,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemBuilder: (context, index) => InkWell(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>  ReviewPost(
+                          builder: (context) => ReviewPost(
                             data: (snapshot.data! as dynamic).docs[index],
                           ),
                         ),

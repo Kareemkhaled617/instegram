@@ -4,7 +4,7 @@ import 'package:instagram_clone_flutter/resources/auth_methods.dart';
 import 'package:instagram_clone_flutter/responsive/mobile_screen_layout.dart';
 import 'package:instagram_clone_flutter/responsive/responsive_layout.dart';
 import 'package:instagram_clone_flutter/responsive/web_screen_layout.dart';
-import 'package:instagram_clone_flutter/screens/signup_screen.dart';
+import 'package:instagram_clone_flutter/screens/auth/signup_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = false;
       });
-      showSnackBar(context, res);
+      showSnackBar(context, 'Invalid Data');
     }
   }
 
@@ -103,19 +103,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(
                   child: !_isLoading
                       ? const Text(
-                          'Log in',style: TextStyle(fontWeight: FontWeight.w900,fontSize: 20),
+                          'Log in',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900, fontSize: 20),
                         )
                       : const CircularProgressIndicator(
                           color: primaryColor,
                         ),
-                  width: MediaQuery.of(context).size.width/2,
+                  width: MediaQuery.of(context).size.width / 2,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration:  const ShapeDecoration(
-                      gradient: LinearGradient(colors: [
-                        Color(0xffE4B16C),
-                        Color(0xffDE5D76),
-                      ]),
+                  decoration: const ShapeDecoration(
+                    gradient: LinearGradient(colors: [
+                      Color(0xffE4B16C),
+                      Color(0xffDE5D76),
+                    ]),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
@@ -134,11 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-
                     child: const Text(
-                      'Dont have an account?',
+                      'Don\'t have an account?',
+                      style: TextStyle(color: Colors.black),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  const SizedBox(
+                    width: 8,
                   ),
                   GestureDetector(
                     onTap: () => Navigator.of(context).push(
@@ -147,22 +152,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: Container(
-                      decoration:  const ShapeDecoration(
+                      decoration: const ShapeDecoration(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
-
                           gradient: LinearGradient(colors: [
-                          Color(0xffE4B16C),
-                          Color(0xffDE5D76),
-                        ])
-                      ),
+                            Color(0xffE4B16C),
+                            Color(0xffDE5D76),
+                          ])),
                       child: const Text(
                         ' SignUp ',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16
-                        ),
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
