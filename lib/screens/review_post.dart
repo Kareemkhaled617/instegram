@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../providers/map_provider.dart';
 import '../utils/global_variable.dart';
 import '../widgets/post_card.dart';
 
@@ -19,8 +17,16 @@ class _ReviewPostState extends State<ReviewPost> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back, color: Color(0xfffab585),),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 50),
+        padding: const EdgeInsets.only(top: 0),
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('posts')
