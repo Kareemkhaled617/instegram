@@ -101,6 +101,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(
                   height: 64,
                 ),
+
                 Stack(
                   children: [
                     _image != null

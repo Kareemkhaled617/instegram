@@ -86,16 +86,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 elevation: 0,
                 leading: FirebaseAuth.instance.currentUser!.uid != widget.uid
                     ? IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back, color: Color(0xfffab585),),
-                )
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xfffab585),
+                        ),
+                      )
                     : Container(),
                 title: Text(
                   userData['username'],
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900
-                  ),
+                      color: Colors.black, fontWeight: FontWeight.w900),
                 ),
                 centerTitle: true,
                 actions: [
@@ -269,18 +270,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                       : const TabBar(
                           tabs: [
-                            Tab(icon: Icon(Icons.grid_view_rounded, color: Color(0xfffab585),)),
+                            Tab(
+                                icon: Icon(
+                              Icons.grid_view_rounded,
+                              color: Color(0xfffab585),
+                            )),
                           ],
                         ),
                   Expanded(
                       child: FirebaseAuth.instance.currentUser!.uid ==
                               widget.uid
                           ? TabBarView(children: [
-                              FutureBuilder(
-                                future: FirebaseFirestore.instance
+                              StreamBuilder(
+                                stream: FirebaseFirestore.instance
                                     .collection('posts')
                                     .where('uid', isEqualTo: widget.uid)
-                                    .get(),
+                                    .snapshots(),
                                 builder: (context, snapshot) {
                                   if (!snapshot.hasData) {
                                     return const Center(
@@ -325,13 +330,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   }
                                 },
                               ),
-                              FutureBuilder(
-                                  future: FirebaseFirestore.instance
+                              StreamBuilder(
+                                  stream: FirebaseFirestore.instance
                                       .collection('users')
                                       .doc(FirebaseAuth
                                           .instance.currentUser!.uid)
                                       .collection('saved')
-                                      .get(),
+                                      .snapshots(),
                                   builder: (context, snapshot) {
                                     if (!snapshot.hasData) {
                                       return const Center(
@@ -350,15 +355,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           childAspectRatio: 1,
                                         ),
                                         itemBuilder: (context, index1) {
-                                          return FutureBuilder(
-                                              future: FirebaseFirestore.instance
-                                                  .collection('posts')
-                                                  .doc(data[index1]['postId'])
-                                                  .get(),
-                                              builder: (context,
-                                                  AsyncSnapshot snapshot) {
-                                                if (snapshot.hasData) {
-                                                  var postData = snapshot.data;
+                                          return StreamBuilder(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('posts')
+                                                .doc(data[index1]['postId'])
+                                                .snapshots(),
+                                            builder: (context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                // Data is still loading
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                // An error occurred while fetching the data
+                                                return const Text(
+                                                    'Error occurred while loading data');
+                                              } else if (snapshot.hasData) {
+                                                var postData = snapshot.data;
+                                                if (postData!.exists) {
                                                   return InkWell(
                                                     onTap: () =>
                                                         Navigator.of(context)
@@ -377,12 +395,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     ),
                                                   );
                                                 } else {
-                                                  return const Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
+                                                  // Document does not exist in Firestore
+                                                  return InkWell(
+                                                    onTap: () async {
+                                                      showDialog(
+                                                        useRootNavigator: false,
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return Dialog(
+                                                            child: ListView(
+                                                                padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                    vertical:
+                                                                        16),
+                                                                shrinkWrap:
+                                                                    true,
+                                                                children: [
+                                                                  'Delete',
+                                                                ]
+                                                                    .map(
+                                                                      (e) => InkWell(
+                                                                          child: Container(
+                                                                            padding:
+                                                                                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                                                            child:
+                                                                                Text(e),
+                                                                          ),
+                                                                          onTap: () async {
+                                                                            print(data[index1]['postId']);
+                                                                            await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection('saved').doc(data[index1]['postId']).delete().then((value) {
+                                                                              Navigator.of(context).pop();
+                                                                            });
+                                                                          }),
+                                                                    )
+                                                                    .toList()),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    child: const Center(
+                                                      child: Text(
+                                                        'Not Found',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w800,
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ),
                                                   );
                                                 }
-                                              });
+                                              } else {
+                                                // No data available
+                                                return const Text(
+                                                    'No data available');
+                                              }
+                                            },
+                                          );
                                         },
                                       );
                                     }
