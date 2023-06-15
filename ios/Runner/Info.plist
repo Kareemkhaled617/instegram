@@ -4,6 +4,16 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Explanation for using location in the background</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Explanation for using location</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Explanation for using location</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Explanation for using Wi-Fi state</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Explanation for reading phone state</string>
 	<key>CFBundleDisplayName</key>
 	<string>Instegram</string>
 	<key>CFBundleExecutable</key>
